@@ -39,15 +39,15 @@ public class Pile implements IPile<ICase> {
 	 * @see pile_manager.IPile#depiler()
 	 */
 	public ICase depiler() {
-		ICase c = pile[nbElement];
-		pile[nbElement--]= null;
+		ICase c = pile[--nbElement];
+		pile[nbElement]= null;
 		return c;
 	}
 
 
 	@Override
 	public void empiler(ICase element) {
-		
+		pile[nbElement++] = element;
 	}
 	
 	@Override
