@@ -19,7 +19,14 @@ public class Case implements ICase {
 	private ICase casePrec;
 
 	public Case(int i, int j) {
-
+		x = i;
+		y = j;
+		cheminSortie = false;
+		murN =false;
+		murS = false;
+		murE = false;
+		murO = false;
+		casePrec = null;
 	}
 
 
