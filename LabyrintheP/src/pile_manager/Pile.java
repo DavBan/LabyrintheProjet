@@ -23,7 +23,7 @@ public class Pile implements IPile<ICase> {
 	 * @see pile_manager.IPile#isVide()
 	 */
 	public boolean isVide() {
-		return false;
+		return nbElement == 0;
 	}
 
 
