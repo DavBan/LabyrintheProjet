@@ -3,10 +3,11 @@ package pile_manager;
 import java.util.Stack;
 
 import case_manager.ICase;
+import labyrinthe_manager.Labyrinthe;
 /**
  * <h1>Classe Pile</h1>
  * <p>Classe repr&eacutesentant une pile de {@link ICase ICase} utilisable pour l'algoithme de 
- * parcours en profondeur du Labyrinthe.</p>
+ * parcours en profondeur d'un {@link labyrinthe_manager.ILabyrinthe Labyrinthe}.</p>
  * <p>Cette pile est impl&eacutement&eacutee par un tableau dont on peut d&eacutecider la taille maximale &agrave
  * la construction. Elle implemente l'interface {@link pile_manager.IPile IPile} qui d&eacutefinit toutes 
  * les m&eacutethode utilisable par cette classe.</p>
