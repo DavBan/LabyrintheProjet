@@ -38,8 +38,10 @@ public class Pile implements IPile<ICase> {
 	/**
 	 * @see pile_manager.IPile#depiler()
 	 */
-	public void depiler() {
-
+	public ICase depiler() {
+		ICase c = pile[nbElement];
+		pile[nbElement--]= null;
+		return c;
 	}
 
 

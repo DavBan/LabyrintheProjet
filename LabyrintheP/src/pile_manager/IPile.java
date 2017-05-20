@@ -10,6 +10,6 @@ public interface IPile<E> {
 
 	public abstract void empiler(E element);
 
-	public abstract void depiler();
+	public abstract E depiler();
 
 }
