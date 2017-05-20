@@ -41,5 +41,9 @@ public class Pile implements IPile<ICase> {
 	public void empiler(ICase element) {
 		
 	}
-
+	
+	@Override
+	public ICase hautDePile() {
+		return null;
+	}
 }
