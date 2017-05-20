@@ -52,6 +52,6 @@ public class Pile implements IPile<ICase> {
 	
 	@Override
 	public ICase hautDePile() {
-		return null;
+		return pile[nbElement-1];
 	}
 }
