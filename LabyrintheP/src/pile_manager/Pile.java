@@ -9,7 +9,13 @@ public class Pile implements IPile<ICase> {
 	private ICase[] pile;
 
 	public Pile() {
-
+		pile = new ICase[1000];
+		nbElement = 0;
+	}
+	
+	public Pile(int size){
+		pile = new ICase[size];
+		nbElement = 0;
 	}
 
 
