@@ -5,11 +5,11 @@ import java.util.Stack;
 import case_manager.ICase;
 /**
  * <h1>Classe Pile</h1>
- * <p>Classe représentant une pile de case utilisable pour l'algoithme de 
+ * <p>Classe repr&eacutesentant une pile de {@link ICase ICase} utilisable pour l'algoithme de 
  * parcours en profondeur du Labyrinthe.</p>
- * <p>Cette pile est implémentée par un tableau dont on peut décider la taille maximale à
- * la construction. Elle implemente l'interface {@link pile_manager.IPile IPile} qui définit toutes 
- * les méthode utilisable par cette classe.</p>
+ * <p>Cette pile est impl&eacutement&eacutee par un tableau dont on peut d&eacutecider la taille maximale &agrave
+ * la construction. Elle implemente l'interface {@link pile_manager.IPile IPile} qui d&eacutefinit toutes 
+ * les m&eacutethode utilisable par cette classe.</p>
  * @author Bananier David
  */
 public class Pile implements IPile<ICase> {
@@ -20,7 +20,6 @@ public class Pile implements IPile<ICase> {
 	/**
 	 * <h1>Constructeur class Pile</h1>
 	 * initialise la pile avec une taille par defaut
-	 * @author Bananier David
 	 */
 	public Pile() {
 		pile = new ICase[1000];
@@ -28,9 +27,8 @@ public class Pile implements IPile<ICase> {
 	}
 	/**
 	 * <h1>Constructeur class Pile</h1>
-	 * initialise la pile avec une taille donnée
+	 * initialise la pile avec une taille donn&eacutee
 	 * @param size taille de la pile a contruire
-	 * @author Bananier David
 	 */
 	public Pile(int size){
 		pile = new ICase[size];
@@ -39,7 +37,6 @@ public class Pile implements IPile<ICase> {
 
 
 	/**
-	 * @author Bananier David
 	 * @see pile_manager.IPile#isVide()
 	 */
 	@Override
@@ -49,7 +46,6 @@ public class Pile implements IPile<ICase> {
 
 
 	/**
-	 * @author Bananier David
 	 * @see pile_manager.IPile#isPlein()
 	 */
 	@Override
@@ -59,7 +55,6 @@ public class Pile implements IPile<ICase> {
 
 
 	/**
-	 * @author Bananier David
 	 * @see pile_manager.IPile#depiler()
 	 */
 	@Override
@@ -70,15 +65,13 @@ public class Pile implements IPile<ICase> {
 	}
 
 	/**
-	 * @author Bananier David
-	 * @see pile_manager.IPile#empiler(E)
+	 * @see pile_manager.IPile#empiler(Object)
 	 */
 	@Override
 	public void empiler(ICase element) {
 		pile[nbElement++] = element;
 	}
 	/**
-	 * @author Bananier David
 	 * @see pile_manager.IPile#hautDePile()
 	 */
 	@Override
