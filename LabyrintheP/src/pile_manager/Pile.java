@@ -31,7 +31,7 @@ public class Pile implements IPile<ICase> {
 	 * @see pile_manager.IPile#isPlein()
 	 */
 	public boolean isPlein() {
-		return false;
+		return nbElement == pile.length;
 	}
 
 
