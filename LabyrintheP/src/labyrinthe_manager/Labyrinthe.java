@@ -1,6 +1,14 @@
 package labyrinthe_manager;
 
 import case_manager.ICase;
+import exception_manager.NoBeginEndException;
+import exception_manager.WrongSizeException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Arrays;
+import java.util.Scanner;
+
 import case_manager.Case;
 /**
  * <h1>Classe Labyrinthe</h1>
@@ -23,6 +31,8 @@ public class Labyrinthe implements ILabyrinthe {
 	private ICase[][] labyrinthe = new ICase[10][10];
 	private int sizeX = 0;
 	private int sizeY = 0;
+	private int[] debut = new int[]{-1, -1};
+	private int[] fin = new int[]{-1, -1};
 	/*##########################################################*/
 	
 	/**
@@ -30,20 +40,24 @@ public class Labyrinthe implements ILabyrinthe {
 	 * <p>Construit le Labyrinthe &agrave partir du fichier nomFichier.</p>
 	 * <p>Utilise la m&eacutethode {@link Labyrinthe#lireFichier(String) lireFichier} pour construire le labyrinthe &agrave partir
 	 * d'un fichier.</p>
+	 * <p>M&eacutethode &eacutecrite par Bananier David</p>
 	 * @param nomFichier chemin vers le fichier qui contient les donn&eacutees.
+	 * @throws FileNotFoundException Si le fichier <code>nomFichier</code> n'&eacutexiste pas.
+	 * @throws WrongSizeException Exceptions g&eacuterant les erreurs de taille du labyrinthe
+	 * @throws NoBeginEndException Exception g&eacuterant l'absence de case d&eacutepart ou arriv&eacutee dans le fichier
 	 * @see Labyrinthe#lireFichier(String)
 	 */
-	public Labyrinthe(String nomFichier) {
+	public Labyrinthe(String nomFichier) throws FileNotFoundException, WrongSizeException, NoBeginEndException {
 		lireFichier(nomFichier);
 	}
 	/**
 	 * <h1>Constructeur de la classe Labyrinthe </h1>
 	 * <p>Construit un Labyrinthe vide. pour pouvoir cr&eacuteer le labyrinthe, il va falloir utiliser la m&eacutethode 
 	 * {@link Labyrinthe#lireFichier(String) lireFichier}.</p>
+	 * <p>M&eacutethode &eacutecrite par Bananier David</p>
 	 * @see Labyrinthe#lireFichier(String) 
 	 */
-	public Labyrinthe() {
-
+	public Labyrinthe() { 
 	}
 
 
@@ -66,7 +80,11 @@ public class Labyrinthe implements ILabyrinthe {
 	 * lignes suivantes d&eacutecrivent chaque case du labyrinthe ainsi que la case de d&eacutepart (symbolis&eacutee par un T pour
 	 * Th&eacutes&eacutee) et celle d'arriv&eacutee (symbolis&eacutee par un A pour Arianne).
 	 * </p>
+	 * <p>M&eacutethode &eacutecrite par Bananier David</p>
 	 * @param nomFichier nom du fichier dans lequel est stock&eacute le Labyrinthe.
+	 * @throws FileNotFoundException si le fichier <code>nomFichier</code> n'&eacutexiste pas
+	 * @throws WrongSizeException Exception g&eacuterant les erreurs de taille du labyrinthe
+	 * @throws NoBeginEndException Exception g&eacuterant l'absence de case d&eacutepart ou arriv&eacutee dans le fichier
 	 * @see labyrinthe_manager.ILabyrinthe#lireFichier(String)
 	 * @see case_manager.ICase#setMurN(boolean)
 	 * @see case_manager.ICase#setMurS(boolean)
@@ -74,8 +92,61 @@ public class Labyrinthe implements ILabyrinthe {
 	 * @see case_manager.ICase#setMurO(boolean)
 	 */
 	@Override
-	public void lireFichier(String nomFichier) {
-
+	public void lireFichier(String nomFichier) throws FileNotFoundException, WrongSizeException, NoBeginEndException {
+		Scanner file = new Scanner(new File(nomFichier));
+		sizeX = file.nextInt();
+		sizeY = file.nextInt();
+		int nbLigne;
+		if(sizeX<1 || sizeY<1){
+			file.close();
+			throw new WrongSizeException();
+		}
+		file.useDelimiter(System.lineSeparator());
+		String[] lab = new String[2*sizeX+1];
+		for(nbLigne = 0; nbLigne< lab.length; nbLigne++){
+			lab[nbLigne] = file.next();
+		}
+		if(file.hasNext()){
+			file.close();
+			throw new WrongSizeException();
+		}
+		file.close();
+		if(nbLigne != 2*sizeX+1){
+			throw new WrongSizeException();
+		}
+		for(int i = 0; i<lab.length; i++){
+			if(lab[i].length()!=sizeY){
+				throw new WrongSizeException();
+			}
+		}
+		labyrinthe = new ICase[sizeX][sizeY];
+		for(int i = 0; i<sizeX; i++){
+			for(int j = 0; j<sizeY; j++){
+				labyrinthe[i][j]= new Case(i, j);
+				char murN = lab[2*i].charAt(2*j+1);
+				char murS = lab[2*i+2].charAt(2*j+1);
+				char murO = lab[2*i+1].charAt(2*j);
+				char murE = lab[2*i+1].charAt(2*j+2);
+				labyrinthe[i][j].setMurN(murN=='-'?true:false);
+				labyrinthe[i][j].setMurS(murS=='-'?true:false);
+				labyrinthe[i][j].setMurE(murE=='|'?true:false);
+				labyrinthe[i][j].setMurO(murO=='|'?true:false);
+				switch(lab[2*i+1].charAt(2*j+1)){
+				case 'A':
+					fin[0] = i;
+					fin[1] = j;
+					labyrinthe[i][j].setCheminSortie(true);
+					break;
+				case 'T':
+					debut[0] = i;
+					debut[1] = j;
+					break;
+				}
+			}
+		}
+		if(debut[0] == -1 || debut[1] == -1 || fin[0] == -1 || fin[1] == -1 ){
+			throw new NoBeginEndException();
+		}
 	}
 
 
@@ -84,7 +155,7 @@ public class Labyrinthe implements ILabyrinthe {
 	 */
 	@Override
 	public void afficherLabyrinthe(boolean afficherSolution) {
-
+		
 	}
 
 
