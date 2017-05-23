@@ -16,8 +16,12 @@ import case_manager.Case;
  * <p>Classe repr&eacutesentant un labyrinthe sous la forme d'une matrice de {@link case_manager.ICase cases}</p>
  * <p>Un labyrinthe peut &ecirctre d&eacutecrit par un tableau &agrave double entr&eacutee (une matrice) ou chaque case contient une
  * instance de la classe {@link case_manager.ICase ICase}. On peut construire un labyrinthe vide dans un premier temps puis le remplir
- * en r&eacutecup&eacuterant les donn&eacutees {@link Labyrinthe#lireFichier(String) dans un fichier texte} ou directement construire
+ * en r&eacutecup&eacuterant les donn&eacutees {@link Labyrinthe_v2#lireFichier(String) dans un fichier texte} ou directement construire
  * le labyrinthe &agrave l'aide du fichier</p>
+ * <p>
+ * Dans cette versionm du labyrinthe, on utilise un parcours r&eacutecursif pour trouver le chemin vers la sortie. Cel&agrave permet 
+ * d'&eacuteviter d'utiliser une pile.
+ * </p>
  * <p>
  * Documentation &eacutecrite par Bananier David<br>
  * Code en partie g&eacuten&eacuter&eacute par Bananier David via le logiciel Astah&copy<br>
@@ -25,8 +29,9 @@ import case_manager.Case;
  * </p>
  * @author Bananier David
  * @author Ba Mohamed
+ * @version 2.0
  */
-public class Labyrinthe implements ILabyrinthe {
+public class Labyrinthe_v2 implements ILabyrinthe {
 
 	/*############# Attributs (Generes avec ASTAH) #############*/
 	private ICase[][] labyrinthe = new ICase[10][10];
@@ -34,32 +39,32 @@ public class Labyrinthe implements ILabyrinthe {
 	private int sizeY = 0;
 	private int[] debut = new int[]{-1, -1};
 	private int[] fin = new int[]{-1, -1};
-	private IPile<ICase> pile = new Pile(sizeX*sizeY);
+	//private IPile<ICase> pile = new Pile(sizeX*sizeY);
 	/*##########################################################*/
 	
 	/**
 	 * <h1>Constructeur de la classe Labyrinthe </h1>
 	 * <p>Construit le Labyrinthe &agrave partir du fichier nomFichier.</p>
-	 * <p>Utilise la m&eacutethode {@link Labyrinthe#lireFichier(String) lireFichier} pour construire le labyrinthe &agrave partir
+	 * <p>Utilise la m&eacutethode {@link Labyrinthe_v2#lireFichier(String) lireFichier} pour construire le labyrinthe &agrave partir
 	 * d'un fichier.</p>
 	 * <p>M&eacutethode &eacutecrite par Bananier David</p>
 	 * @param nomFichier chemin vers le fichier qui contient les donn&eacutees.
 	 * @throws FileNotFoundException Si le fichier <code>nomFichier</code> n'&eacutexiste pas.
 	 * @throws WrongSizeException Exceptions g&eacuterant les erreurs de taille du labyrinthe
 	 * @throws NoBeginEndException Exception g&eacuterant l'absence de case d&eacutepart ou arriv&eacutee dans le fichier
-	 * @see Labyrinthe#lireFichier(String)
+	 * @see Labyrinthe_v2#lireFichier(String)
 	 */
-	public Labyrinthe(String nomFichier) throws FileNotFoundException, WrongSizeException, NoBeginEndException {
+	public Labyrinthe_v2(String nomFichier) throws FileNotFoundException, WrongSizeException, NoBeginEndException {
 		lireFichier(nomFichier);
 	}
 	/**
 	 * <h1>Constructeur de la classe Labyrinthe </h1>
 	 * <p>Construit un Labyrinthe vide. pour pouvoir cr&eacuteer le labyrinthe, il va falloir utiliser la m&eacutethode 
-	 * {@link Labyrinthe#lireFichier(String) lireFichier}.</p>
+	 * {@link Labyrinthe_v2#lireFichier(String) lireFichier}.</p>
 	 * <p>M&eacutethode &eacutecrite par Bananier David</p>
-	 * @see Labyrinthe#lireFichier(String) 
+	 * @see Labyrinthe_v2#lireFichier(String) 
 	 */
-	public Labyrinthe() { 
+	public Labyrinthe_v2() { 
 	}
 
 
@@ -116,7 +121,7 @@ public class Labyrinthe implements ILabyrinthe {
 			file.close();
 			throw new WrongSizeException();
 		}
-		pile = new Pile(sizeX *sizeY);
+		//pile = new Pile(sizeX *sizeY);
 		file.close();
 		if(nbLigne != 2*sizeX+1){
 			throw new WrongSizeException();
@@ -165,29 +170,32 @@ public class Labyrinthe implements ILabyrinthe {
 		
 	}
 
-
 	/**
 	 * <h1>M&eacutethode parcoursLabyrinthe()</h1>
 	 * <p>Parcours le Labyrinthe en profondeur pour trouver la sortie.</p>
-	 * <p>Cette methode va parcourir le graphe representant le labyrinthe selon un parcours en profondeur, &agrave l'aide d'une 
-	 * {@link pile_manager.Pile pile}, pour trouver le chemin entre l'entr&eacutee et la sortie du labyrinthe. &Agrave chaque 
-	 * &eacutetape du parcours, cette m&eacutethode proc&egravede de la mani&egravere suivante :
+	 * <p>Cette methode va parcourir le graphe representant le labyrinthe selon un parcours en profondeur, de mani&egravere 
+	 * r&eacutecursive, sans utiliser de pile, en utilisant deux fonctions de parcours en profondeur, pour trouver le chemin entre l'entr&eacutee 
+	 *  et la sortie du labyrinthe. &Agrave chaque &eacutetape du parcours, cette m&eacutethode proc&egravede de la mani&egravere 
+	 *  suivante :
 	 * <ul>
-	 * 		<li>On {@link pile_manager.IPile#empiler(Object) empile} la {@link case_manager.Case case} C &agrave laquelle on est.</li>
+	 * 		<li>On v&eacuterifie si la {@link case_manager.Case case} C &agrave laquelle on est est la case d'arriver. si oui, 
+	 * 			on s'arr&ecircte l&agrave</li>
 	 * 		<li>Ensuite on parcours les voisins directs, c'est &agrave dire :
 	 * 			<ol>
 	 * 				<li>On regarde si C a une  case voisine CN accessible au {@link case_manager.ICase#hasMurN() nord}.</li>
+	 * 				<li>Si CN n'a pas d&eacutej&agrave &eacutet&eacute visit&eacute. </li>
 	 * 				<li>Si oui, on {@link case_manager.ICase#setPrecedent(case_manager.ICase) d&eacutefinit la pr&eacutec&eacutedente} de CN dans le parcours en profondeur par C.</li>
-	 * 				<li>Si CN n'a pas d&eacutej&agrave &eacutet&eacute visit&eacute, On parcoure CN. </li>
-	 * 				<li>Si CN {@link case_manager.ICase#isCheminSortie() est sur le chemin de sortie}, alors C aussi, on peut donc depiler et revenir en arriere.</li>
+	 * 				<li>On parcours CN.
+	 * 				<li>Si CN {@link case_manager.ICase#isCheminSortie() est sur le chemin de sortie}, alors C aussi, on peut donc retourner true et revenir en arriere.</li>
 	 * 				<li>Si le traitement continue, on fait la m&ecircme chose au sud &agrave l'est et &agrave l'ouest.</li>
 	 * 			</ol>
 	 * 		</li>
-	 * 		<li>Si le traitement est arrive jusqu'&agrave la fin, on depile et on arr&ecircte le traitement</li>
+	 * 		<li>Si le traitement est arrive jusqu'&agrave la fin, c'est que C n'est pas sur le chemin de sortie, on retourne donc faux</li>
 	 * </ul>
 	 * &Agrave la fin du tra&icirctement complet, on a le chemin vers la sortie s'il y en a un.
 	 * </p>
 	 * <p>M&eacutethode &eacutecrite par Bananier David</p>
+	 * @return true si la case est sur le chemin de sortie ou non
 	 * @see labyrinthe_manager.ILabyrinthe#parcoursLabyrinthe()
 	 * @see ICase#getPrecedent()
 	 * @see ICase#hasMurN()
@@ -199,23 +207,24 @@ public class Labyrinthe implements ILabyrinthe {
 	 */
 	@Override
 	public boolean parcoursLabyrinthe() {
-		if(pile.isVide()){
+		//if(pile.isVide()){
 			ICase c = labyrinthe[debut[0]][debut[1]];
-			pile.empiler(c);
+			//pile.empiler(c);
 			c.setPrecedent(c);
-		}
-		ICase c = pile.hautDePile();
+			
+		//}
+		/*ICase c = pile.hautDePile();
 		if(c.isCheminSortie()){
 			return true;
-		}
+		}*/
 		if(!c.hasMurN()){
 			ICase cn = labyrinthe[c.getX()-1][c.getY()];
 			if(!cn.hasPrecedent()){
 				cn.setPrecedent(c);
-				pile.empiler(cn);
-				if(parcoursLabyrinthe()){
+				//pile.empiler(cn);
+				if(parcoursLabyrinthe(cn)){
 					c.setCheminSortie(true);
-					pile.depiler();
+					//pile.depiler();
 					return true;
 				}
 			}
@@ -224,10 +233,10 @@ public class Labyrinthe implements ILabyrinthe {
 			ICase ce = labyrinthe[c.getX()][c.getY()+1];
 			if(!ce.hasPrecedent()){
 				ce.setPrecedent(c);
-				pile.empiler(ce);
-				if(parcoursLabyrinthe()){
+				//pile.empiler(ce);
+				if(parcoursLabyrinthe(ce)){
 					c.setCheminSortie(true);
-					pile.depiler();
+					//pile.depiler();
 					return true;
 				}
 			}
@@ -236,10 +245,10 @@ public class Labyrinthe implements ILabyrinthe {
 			ICase co = labyrinthe[c.getX()][c.getY()-1];
 			if(!co.hasPrecedent()){
 				co.setPrecedent(c);
-				pile.empiler(co);
-				if(parcoursLabyrinthe()){
+				//pile.empiler(co);
+				if(parcoursLabyrinthe(co)){
 					c.setCheminSortie(true);
-					pile.depiler();
+					//pile.depiler();
 					return true;
 				}
 			}
@@ -248,15 +257,96 @@ public class Labyrinthe implements ILabyrinthe {
 			ICase cs = labyrinthe[c.getX()+1][c.getY()];
 			if(!cs.hasPrecedent()){
 				cs.setPrecedent(c);
-				pile.empiler(cs);
-				if(parcoursLabyrinthe()){
+				//pile.empiler(cs);
+				if(parcoursLabyrinthe(cs)){
 					c.setCheminSortie(true);
-					pile.depiler();
+					//pile.depiler();
 					return true;
 				}
 			}
 		}
-		pile.depiler();
+		//pile.depiler();
+		return false;
+	}/**
+	 * <h1>M&eacutethode parcoursLabyrinthe()</h1>
+	 * <p>Parcours le Labyrinthe en profondeur de mani&egravere r&eacutecursive pour trouver la sortie.</p>
+	 * <p>Cette methode va parcourir le graphe representant le labyrinthe selon un parcours en profondeur, de mani&egravere 
+	 * r&eacutecursive, sans utiliser de pile, en utilisant deux fonctions de parcours en profondeur, pour trouver le chemin entre l'entr&eacutee 
+	 *  et la sortie du labyrinthe. &Agrave chaque &eacutetape du parcours, cette m&eacutethode proc&egravede de la mani&egravere 
+	 *  suivante :
+	 * <ul>
+	 * 		<li>On v&eacuterifie si la {@link case_manager.Case case} C &agrave laquelle on est est la case d'arriver. si oui, 
+	 * 			on s'arr&ecircte l&agrave</li>
+	 * 		<li>Ensuite on parcours les voisins directs, c'est &agrave dire :
+	 * 			<ol>
+	 * 				<li>On regarde si C a une  case voisine CN accessible au {@link case_manager.ICase#hasMurN() nord}.</li>
+	 * 				<li>Si CN n'a pas d&eacutej&agrave &eacutet&eacute visit&eacute. </li>
+	 * 				<li>Si oui, on {@link case_manager.ICase#setPrecedent(case_manager.ICase) d&eacutefinit la pr&eacutec&eacutedente} de CN dans le parcours en profondeur par C.</li>
+	 * 				<li>On parcours CN.
+	 * 				<li>Si CN {@link case_manager.ICase#isCheminSortie() est sur le chemin de sortie}, alors C aussi, on peut donc retourner true et revenir en arriere.</li>
+	 * 				<li>Si le traitement continue, on fait la m&ecircme chose au sud &agrave l'est et &agrave l'ouest.</li>
+	 * 			</ol>
+	 * 		</li>
+	 * 		<li>Si le traitement est arrive jusqu'&agrave la fin, c'est que C n'est pas sur le chemin de sortie, on retourne donc faux</li>
+	 * </ul>
+	 * &Agrave la fin du tra&icirctement complet, on a le chemin vers la sortie s'il y en a un.
+	 * </p>
+	 * <p>M&eacutethode &eacutecrite par Bananier David</p>
+	 * @param c case &agrave laquelle on est dans le parcours en profondeur
+	 * @return true si la case est sur le chemin de sortie ou non
+	 * @see labyrinthe_manager.ILabyrinthe#parcoursLabyrinthe()
+	 * @see ICase#getPrecedent()
+	 * @see ICase#hasMurN()
+	 * @see ICase#hasMurS()
+	 * @see ICase#hasMurE()
+	 * @see ICase#hasMurO()
+	 * @see ICase#isCheminSortie()
+	 * @see ICase#setCheminSortie(boolean)
+	 */
+	private boolean parcoursLabyrinthe(ICase c){
+		if(c.isCheminSortie()){
+			return true;
+		}
+		if(!c.hasMurN()){
+			ICase cn = labyrinthe[c.getX()-1][c.getY()];
+			if(!cn.hasPrecedent()){
+				cn.setPrecedent(c);
+				if(parcoursLabyrinthe(cn)){
+					c.setCheminSortie(true);
+					return true;
+				}
+			}
+		}
+		if(!c.hasMurE()){
+			ICase ce = labyrinthe[c.getX()][c.getY()+1];
+			if(!ce.hasPrecedent()){
+				ce.setPrecedent(c);
+				if(parcoursLabyrinthe(ce)){
+					c.setCheminSortie(true);
+					return true;
+				}
+			}
+		}
+		if(!c.hasMurO()){
+			ICase co = labyrinthe[c.getX()][c.getY()-1];
+			if(!co.hasPrecedent()){
+				co.setPrecedent(c);
+				if(parcoursLabyrinthe(co)){
+					c.setCheminSortie(true);
+					return true;
+				}
+			}
+		}
+		if(!c.hasMurS()){
+			ICase cs = labyrinthe[c.getX()+1][c.getY()];
+			if(!cs.hasPrecedent()){
+				cs.setPrecedent(c);
+				if(parcoursLabyrinthe(cs)){
+					c.setCheminSortie(true);
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 }
