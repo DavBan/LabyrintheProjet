@@ -13,13 +13,18 @@ package case_manager;
  * La plupart des &eacutel&eacutements sit&eacute ci-dessus sont d&eacutefinis lors de la contruction du labyrinthe &agrave
  * partir {@link labyrinthe_manager.Labyrinthe#lireFichier(String) du fichier} ou lors du {@link labyrinthe_manager.Labyrinthe#parcoursLabyrinthe() parcours en profondeur}
  * </p>
+ * <p>
+ * Documentation &eacutecrite par Bananier David<br>
+ * Code en partie g&eacuten&eacuter&eacute par Bananier David via le logiciel Astah&copy<br>
+ * Code en partie &eacutecrit par Ba Mohamed et Bananier David
+ * </p>
  * @author Bananier David
  * @author Ba Mohamed
  * @see labyrinthe_manager.Labyrinthe
  * @see ICase
  */
 public class Case implements ICase {
-
+	/*############# Attributs (Generes avec ASTAH) #############*/
 	private int x;
 
 	private int y;
@@ -35,6 +40,8 @@ public class Case implements ICase {
 	private boolean murO;
 
 	private ICase casePrec;
+	/*##########################################################*/
+	
 	/**
 	 * <h1>Contructeur classe Case</h1>
 	 * <p>Initialise la case en specifiant sa position dans le labyrinthe</p>

@@ -9,14 +9,22 @@ import case_manager.Case;
  * instance de la classe {@link case_manager.ICase ICase}. On peut construire un labyrinthe vide dans un premier temps puis le remplir
  * en r&eacutecup&eacuterant les donn&eacutees {@link Labyrinthe#lireFichier(String) dans un fichier texte} ou directement construire
  * le labyrinthe &agrave l'aide du fichier</p>
+ * <p>
+ * Documentation &eacutecrite par Bananier David<br>
+ * Code en partie g&eacuten&eacuter&eacute par Bananier David via le logiciel Astah&copy<br>
+ * Code en partie &eacutecrit par Ba Mohamed et Bananier David
+ * </p>
  * @author Bananier David
  * @author Ba Mohamed
  */
 public class Labyrinthe implements ILabyrinthe {
 
+	/*############# Attributs (Generes avec ASTAH) #############*/
 	private ICase[][] labyrinthe = new ICase[10][10];
 	private int sizeX = 0;
 	private int sizeY = 0;
+	/*##########################################################*/
+	
 	/**
 	 * <h1>Constructeur de la classe Labyrinthe </h1>
 	 * <p>Construit le Labyrinthe &agrave partir du fichier nomFichier.</p>

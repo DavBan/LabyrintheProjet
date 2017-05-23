@@ -14,6 +14,10 @@ package pile_manager;
  * <li>L'operation {@link pile_manager.IPile#hautDePile() hautDePile} (<=> peek)</li>
  * </ul>
  * </p>
+ * <p>
+ * Documentation &eacutecrite par Bananier David<br>
+ * Code g&eacuten&eacuter&eacute par Bananier David via le logiciel Astah&copy
+ * </p>
  * @author Bananier David
  * 
  * @param <E>

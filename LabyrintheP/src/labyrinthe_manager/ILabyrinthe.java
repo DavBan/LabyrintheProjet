@@ -11,6 +11,10 @@ import case_manager.Case;
  * 	<li>Parcours en profondeur du Labyrinthe pour trouver la sortie</li>
  * </ol>
  * </p>
+ * <p>
+ * Documentation &eacutecrite par Bananier David<br>
+ * Code g&eacuten&eacuter&eacute par Bananier David via le logiciel Astah&copy
+ * </p>
  * @author Bananier David
  * @see case_manager.ICase
  */

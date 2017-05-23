@@ -19,6 +19,10 @@ import labyrinthe_manager.ILabyrinthe;
  * 	</li>
  * </ul>
  * </p>
+ * <p>
+ * Documentation &eacutecrite par Bananier David<br>
+ * Code g&eacuten&eacuter&eacute par Bananier David via le logiciel Astah&copy
+ * </p>
  * @author Bananier David
  */
 public interface ICase {
