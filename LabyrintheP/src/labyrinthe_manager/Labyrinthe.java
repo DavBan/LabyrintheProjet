@@ -3,10 +3,11 @@ package labyrinthe_manager;
 import case_manager.ICase;
 import exception_manager.NoBeginEndException;
 import exception_manager.WrongSizeException;
+import pile_manager.IPile;
+import pile_manager.Pile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.Scanner;
 
 import case_manager.Case;
@@ -33,6 +34,7 @@ public class Labyrinthe implements ILabyrinthe {
 	private int sizeY = 0;
 	private int[] debut = new int[]{-1, -1};
 	private int[] fin = new int[]{-1, -1};
+	private IPile<ICase> pile = new Pile(sizeX*sizeY);
 	/*##########################################################*/
 	
 	/**
@@ -104,12 +106,17 @@ public class Labyrinthe implements ILabyrinthe {
 		file.useDelimiter(System.lineSeparator());
 		String[] lab = new String[2*sizeX+1];
 		for(nbLigne = 0; nbLigne< lab.length; nbLigne++){
-			lab[nbLigne] = file.next();
+			String buf = "";
+			while(buf.length() == 0){
+				buf = file.nextLine();
+			}
+			lab[nbLigne] = buf;
 		}
 		if(file.hasNext()){
 			file.close();
 			throw new WrongSizeException();
 		}
+		pile = new Pile(sizeX *sizeY);
 		file.close();
 		if(nbLigne != 2*sizeX+1){
 			throw new WrongSizeException();
@@ -127,10 +134,10 @@ public class Labyrinthe implements ILabyrinthe {
 				char murS = lab[2*i+2].charAt(2*j+1);
 				char murO = lab[2*i+1].charAt(2*j);
 				char murE = lab[2*i+1].charAt(2*j+2);
-				labyrinthe[i][j].setMurN(murN=='-'?true:false);
-				labyrinthe[i][j].setMurS(murS=='-'?true:false);
-				labyrinthe[i][j].setMurE(murE=='|'?true:false);
-				labyrinthe[i][j].setMurO(murO=='|'?true:false);
+				labyrinthe[i][j].setMurN(murN=='-');
+				labyrinthe[i][j].setMurS(murS=='-');
+				labyrinthe[i][j].setMurE(murE=='|');
+				labyrinthe[i][j].setMurO(murO=='|');
 				switch(lab[2*i+1].charAt(2*j+1)){
 				case 'A':
 					fin[0] = i;
@@ -180,6 +187,7 @@ public class Labyrinthe implements ILabyrinthe {
 	 * </ul>
 	 * &Agrave la fin du tra&icirctement complet, on a le chemin vers la sortie s'il y en a un.
 	 * </p>
+	 * <p>M&eacutethode &eacutecrite par Bananier David</p>
 	 * @see labyrinthe_manager.ILabyrinthe#parcoursLabyrinthe()
 	 * @see ICase#getPrecedent()
 	 * @see ICase#hasMurN()
@@ -190,8 +198,66 @@ public class Labyrinthe implements ILabyrinthe {
 	 * @see ICase#setCheminSortie(boolean)
 	 */
 	@Override
-	public void parcoursLabyrinthe() {
-
+	public boolean parcoursLabyrinthe() {
+		if(pile.isVide()){
+			ICase c = labyrinthe[debut[0]][debut[1]];
+			pile.empiler(c);
+			c.setPrecedent(c);
+		}
+		ICase c = pile.hautDePile();
+		if(c.isCheminSortie()){
+			return true;
+		}
+		if(!c.hasMurN()){
+			ICase cn = labyrinthe[c.getX()-1][c.getY()];
+			if(!cn.hasPrecedent()){
+				cn.setPrecedent(c);
+				pile.empiler(cn);
+				if(parcoursLabyrinthe()){
+					c.setCheminSortie(true);
+					pile.depiler();
+					return true;
+				}
+			}
+		}
+		if(!c.hasMurE()){
+			ICase ce = labyrinthe[c.getX()][c.getY()+1];
+			if(!ce.hasPrecedent()){
+				ce.setPrecedent(c);
+				pile.empiler(ce);
+				if(parcoursLabyrinthe()){
+					c.setCheminSortie(true);
+					pile.depiler();
+					return true;
+				}
+			}
+		}
+		if(!c.hasMurO()){
+			ICase co = labyrinthe[c.getX()][c.getY()-1];
+			if(!co.hasPrecedent()){
+				co.setPrecedent(c);
+				pile.empiler(co);
+				if(parcoursLabyrinthe()){
+					c.setCheminSortie(true);
+					pile.depiler();
+					return true;
+				}
+			}
+		}
+		if(!c.hasMurS()){
+			ICase cs = labyrinthe[c.getX()+1][c.getY()];
+			if(!cs.hasPrecedent()){
+				cs.setPrecedent(c);
+				pile.empiler(cs);
+				if(parcoursLabyrinthe()){
+					c.setCheminSortie(true);
+					pile.depiler();
+					return true;
+				}
+			}
+		}
+		pile.depiler();
+		return false;
 	}
 
 }

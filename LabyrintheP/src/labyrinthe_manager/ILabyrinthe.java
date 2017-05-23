@@ -44,6 +44,6 @@ public interface ILabyrinthe {
 	 * <h1>M&eacutethode parcoursLabyrinthe()</h1>
 	 * <p>Parcours le Labyrinthe en profondeur pour trouver la sortie.</p>
 	 */
-	public abstract void parcoursLabyrinthe();
+	public abstract boolean parcoursLabyrinthe();
 
 }

@@ -1,9 +1,6 @@
 package pile_manager;
 
-import java.util.Stack;
-
 import case_manager.ICase;
-import labyrinthe_manager.Labyrinthe;
 /**
  * <h1>Classe Pile</h1>
  * <p>Classe repr&eacutesentant une pile de {@link ICase ICase} utilisable pour l'algoithme de 
